@@ -83,7 +83,7 @@ class Vector {
     public override string ToString() {
         string rep = "[";
         for (int i = 0; i < size; i++) {
-            rep += (values[i] > 0 ? " " : "") + $"{values[i]:F3}" + (i != size - 1 ? " " : "");
+            rep += $"{values[i]:F3}" + (i != size - 1 ? " " : "");
         }
         rep += "]";
 
