@@ -1,7 +1,5 @@
 namespace Deepforge.Struct;
 
-using Deepforge.Utility;
-
 class Vector {
     private int size;
     private float[] values = [];
@@ -12,7 +10,7 @@ class Vector {
         this.size = size;
         if (init != null) {
             if (size != init.Length) {
-                new Exception($"The initialization vector must contain exactly {size} values.");
+                throw new Exception($"The initialization vector must be {size} in size.");
             }
             values = init;
         } else {
@@ -28,22 +26,16 @@ class Vector {
     public float this[int index] {
         get {
             if (index <= -1 || index >= this.size) {
-                new Exception($"Index {index} is outside of the bounds.");
+                throw new Exception($"Vector - Index is outside of the bounds.");
             }
 
             return values[index];
-        } set {
-            if (index <= -1 || index >= this.size) {
-                new Exception($"Index {index} is outside of the bounds.");
-            }
-
-            values[index] = value;
-        }
+        } set {}
     }
 
     public static Vector operator +(Vector a, Vector b) {
         if (a.Size != b.Size) {
-            new Exception($"Vectors must have the same length when adding.");
+            throw new Exception($"Vectors must have the same length when adding.");
         }
 
         float[] sum = new float[a.Size];
@@ -54,9 +46,13 @@ class Vector {
         return new Vector(a.Size, sum);
     }
 
+    public static Vector operator -(Vector a, Vector b) {
+        return a + b * -1;
+    }
+
     public static float operator *(Vector a, Vector b) {
         if (a.Size != b.Size) {
-            new Exception($"Vectors must have the same length when adding.");
+            throw new Exception($"Vectors must have the same length when adding.");
         }
 
         float sum = 0;
@@ -67,10 +63,27 @@ class Vector {
         return sum;
     }
 
+    public static Vector operator *(Vector a, float b) {
+        float[] res = new float[a.Size];
+        for (int i = 0; i < a.Size; i++) {
+            res[i] = a[i] * b;
+        }
+        
+        return new Vector(a.Size, res);
+    }
+
+    public static Vector operator *(float a, Vector b) {
+        return b * a;
+    }
+
+    public static Vector operator /(Vector a, float b) {
+        return a * (1 / b);
+    }
+
     public override string ToString() {
         string rep = "[";
         for (int i = 0; i < size; i++) {
-            rep += $"{values[i]:F3}" + (i != size - 1 ? " " : "");
+            rep += (values[i] > 0 ? " " : "") + $"{values[i]:F3}" + (i != size - 1 ? " " : "");
         }
         rep += "]";
 
