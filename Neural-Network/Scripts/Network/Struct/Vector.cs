@@ -26,11 +26,17 @@ class Vector {
     public float this[int index] {
         get {
             if (index <= -1 || index >= this.size) {
-                throw new Exception($"Vector - Index is outside of the bounds.");
+                throw new Exception($"Index is outside of the bounds.");
             }
 
             return values[index];
-        } set {}
+        } set {
+            if (index <= -1 || index >= this.size) {
+                throw new Exception($"Index is outside of the bounds.");
+            }
+
+            values[index] = value;
+        }
     }
 
     public static Vector operator +(Vector a, Vector b) {
@@ -38,12 +44,12 @@ class Vector {
             throw new Exception($"Vectors must have the same length when adding.");
         }
 
-        float[] sum = new float[a.Size];
+        Vector res = new Vector(a.Size);
         for (int i = 0; i < a.Size; i++) {
-            sum[i] = a[i] + b[i];
+            res[i] = a[i] + b[i];
         }
-        
-        return new Vector(a.Size, sum);
+
+        return res;
     }
 
     public static Vector operator -(Vector a, Vector b) {
@@ -55,21 +61,21 @@ class Vector {
             throw new Exception($"Vectors must have the same length when adding.");
         }
 
-        float sum = 0;
+        float res = 0;
         for (int i = 0; i < a.Size; i++) {
-            sum += a[i] * b[i];
+            res += a[i] * b[i];
         }
-        
-        return sum;
+
+        return res;
     }
 
     public static Vector operator *(Vector a, float b) {
-        float[] res = new float[a.Size];
+        Vector res = new Vector(a.Size);
         for (int i = 0; i < a.Size; i++) {
             res[i] = a[i] * b;
         }
-        
-        return new Vector(a.Size, res);
+
+        return res;
     }
 
     public static Vector operator *(float a, Vector b) {

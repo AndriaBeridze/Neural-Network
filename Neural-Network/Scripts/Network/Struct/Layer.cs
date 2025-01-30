@@ -9,7 +9,7 @@ class Layer {
 
     private string activation;
 
-    public Layer(int nodesIn, int nodesOut, string activation = "relu") {
+    public Layer(int nodesIn, int nodesOut, string activation = "sigmoid") {
         this.nodesIn = nodesIn;
         this.nodesOut = nodesOut;
         this.activation = activation;
@@ -23,6 +23,11 @@ class Layer {
 
     public Matrix Weights => weights;
     public Vector Biases => biases;
+
+    public void ApplyGradient(Matrix weightGradient, Vector biasGradient, float learningRate) {
+        weights -= weightGradient * learningRate;
+        biases -= biasGradient * learningRate;
+    }
 
     public Vector Forward(Vector input) {
         return Activate(weights * input + biases);

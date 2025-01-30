@@ -32,10 +32,18 @@ class Matrix {
     public Vector this[int index] {
         get {
             if (index <= -1 || index >= row) {
-                throw new Exception($"Matrix - Index is outside of the bounds.");
+                throw new Exception($"Index is outside of the bounds.");
             }
             return values[index];
-        } set {}
+        } set {
+            if (index <= -1 || index >= row) {
+                throw new Exception($"Index is outside of the bounds.");
+            }
+            if (value.Size != column) {
+                throw new Exception($"The vector must be of size {column}.");
+            }
+            values[index] = value;  
+        }
     }
 
     public static Matrix operator +(Matrix a, Matrix b) {
@@ -43,12 +51,12 @@ class Matrix {
             throw new Exception("Dimensions of two matrices have to be the same when adding.");
         }
 
-        Vector[] res = new Vector[a.Row];
+        Matrix res = new Matrix(a.Row, a.Column);
         for (int i = 0; i < a.Row; i++) {
             res[i] = a[i] + b[i];
         }
 
-        return new Matrix(a.Row, a.Column, res);
+        return res;
     }
 
     public static Matrix operator -(Matrix a, Matrix b) {
@@ -60,21 +68,21 @@ class Matrix {
             throw new Exception("Column dimension of the matrix has to be equal to the size of the vector when multiplying.");
         }
 
-        float[] res = new float[a.Row];
+        Vector res = new Vector(a.Row);
         for (int i = 0; i < a.Row; i++) {
             res[i] = a[i] * b;
         }
 
-        return new Vector(a.Row, res);
+        return res;
     } 
 
     public static Matrix operator *(Matrix a, float b) {
-        Vector[] res = new Vector[a.Row];
+        Matrix res = new Matrix(a.Row, a.Column);
         for (int i = 0; i < a.Row; i++) {
             res[i] = a[i] * b;
         }
 
-        return new Matrix(a.Row, a.Column, res);
+        return res;
     } 
 
     public static Matrix operator *(float a, Matrix b) {
@@ -89,9 +97,6 @@ class Matrix {
         string res = "";
         for (int i = 0; i < row; i++) {
             string r = values[i].ToString();
-            r = r.Replace('[', '|');
-            r = r.Replace(']', '|');
-
             res += r + (i != row - 1 ? "\n" : "");
         }
 
