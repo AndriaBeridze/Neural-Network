@@ -1,4 +1,3 @@
-using System.Runtime.Versioning;
 using Deepforge.Struct;
 using Deepforge.Utility;
 
@@ -25,84 +24,85 @@ class Network {
         return res;
     }
 
-    public void Learn(Vector input, Vector target, float learningRate) {
-        Vector output = Forward(input);
-        Vector error = target - output;
-        float cost = Util.Cost(error);
+    public void Learn(Vector input, Vector target, double learningRate) {
+        Vector output = Forward(input); // Forward pass
 
-        float h = 0.0001f;
-        List<Matrix> weightGradients = new List<Matrix>();
-        List<Vector> biasGradients = new List<Vector>();
-        for (int i = layers.Count - 1; i >= 0; i--) {
-            Matrix gradientW = new Matrix(layers[i].NodesOut, layers[i].NodesIn);
-            Vector gradientB = new Vector(layers[i].NodesOut);
+        Matrix[] gradientW = new Matrix[layers.Count];
+        Vector[] gradientB = new Vector[layers.Count];
 
-            for (int j = 0; j < layers[i].NodesOut; j++) {
-                for (int k = 0; k < layers[i].NodesIn; k++) {
-                    layers[i].Weights[j][k] += h;
-                    float delta = Util.Cost(target - Forward(input)) - cost;
-                    layers[i].Weights[j][k] -= h;
+        Vector outputError = output - target;
+        Vector derivative = layers[^1].Derivative(output);
+        Vector delta = new(target.Size);
 
-                    gradientW[j][k] = delta / h;
+        for (int i = 0; i < target.Size; i++) {
+            delta[i] = outputError[i] * derivative[i];
+        }
+
+        for (int layerIndex = layers.Count - 1; layerIndex >= 0; layerIndex--) {
+            Layer layer = layers[layerIndex];
+
+            gradientW[layerIndex] = new Matrix(layer.NodesOut, layer.NodesIn);
+            gradientB[layerIndex] = new Vector(layer.NodesOut);
+
+            for (int i = 0; i < layer.NodesOut; i++) {
+                gradientB[layerIndex][i] = delta[i]; // Bias gradient
+                for (int j = 0; j < layer.NodesIn; j++) {
+                    gradientW[layerIndex][i][j] = delta[i] * layer.LastInput[j]; // Weight gradient
                 }
             }
 
-            for (int j = 0; j < layers[i].NodesOut; j++) {
-                layers[i].Biases[j] += h;
-                float delta = Util.Cost(target - Forward(input)) - cost;
-                layers[i].Biases[j] -= h;
+            outputError = ~layer.Weights * delta;
+            derivative = layer.Derivative(layer.LastInput);
 
-                gradientB[j] = delta / h;
+            delta = new Vector(outputError.Size);
+            for (int i = 0; i < outputError.Size; i++) {
+                delta[i] = outputError[i] * derivative[i];
             }
-
-            weightGradients.Add(gradientW);
-            biasGradients.Add(gradientB);
         }
 
-        weightGradients.Reverse();
-        biasGradients.Reverse();
-
-        for (int i = 0; i < layers.Count; i++) {
-            layers[i].ApplyGradient(weightGradients[i], biasGradients[i], learningRate);
+        // Apply gradients with learning rate
+        for (int layerIndex = 0; layerIndex < layers.Count; layerIndex++) {
+            layers[layerIndex].ApplyGradient(gradientW[layerIndex], gradientB[layerIndex], learningRate);
         }
     }
 
-    public void Train(Vector[] inputs, Vector[] targets, int epochs = 10, float learningRate = 0.3f) {
-        Console.WriteLine("Training model...");
-        for (int i = 0; i < epochs; i++) {
-            Console.Write($"Epoch {i + 1:D2}/{epochs:D2}: [");
-            int progressBarWidth = 50;
-            for (int j = 0; j < inputs.Length; j++) {
-                Learn(inputs[j], targets[j], learningRate);
-                int progress = (int)((float)(j + 1) / inputs.Length * progressBarWidth);
-                Console.Write(new string('#', progress) + new string('-', progressBarWidth - progress) + $"] {TestAccuracy(inputs, targets):F4}");
-                Console.SetCursorPosition(14, Console.CursorTop);
-            }
-            Console.WriteLine();
-        }
 
+    public void Train(Vector[] inputs, Vector[] targets, double learningRate = 0.1f, int batchSize = 100) {
+        Console.WriteLine("Training...");
+        Console.WriteLine("Cost: 0.0000");
+        while (true) {
+            for (int i = 0; i < inputs.Length; i++) {
+                Learn(inputs[i], targets[i], learningRate);
+            }
+
+            double cost = Util.Cost(targets, inputs.Select(Predict).ToArray());
+            
+            Console.SetCursorPosition(6, Console.CursorTop - 1);
+            Console.WriteLine($"{cost:F4}");
+
+            if (cost <= 0.01) break;
+        }
         Console.WriteLine("Training complete.");
-        Console.WriteLine();
-        Console.WriteLine($"Training accuracy: {TestAccuracy(inputs, targets):F4}");
+        Console.WriteLine($"Training accuracy: {Accuracy(inputs, targets)*100:F2}%");
     }
 
     public void Test(Vector[] inputs, Vector[] targets) {
-        Console.WriteLine($"Test accuracy: {TestAccuracy(inputs, targets):F4}");
+        Console.WriteLine($"Testing accuracy: {Accuracy(inputs, targets)*100:F2}%");
     }
 
-    public float TestAccuracy(Vector[] inputs, Vector[] targets) {
+    public double Accuracy(Vector[] inputs, Vector[] targets) {
         int correct = 0;
         for (int i = 0; i < inputs.Length; i++) {
             Vector output = Predict(inputs[i]);
             Vector error = targets[i] - output;
-            float cost = Util.Cost(error);
+            double cost = Util.Cost(error);
 
             if (cost < 0.1f) {
                 correct++;
             }   
         }
 
-        return (float) correct / inputs.Length;
+        return (double) correct / inputs.Length;
     }
 
     public Vector Predict(Vector input) {

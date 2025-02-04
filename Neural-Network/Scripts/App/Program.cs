@@ -11,15 +11,17 @@ class Program {
 
         List<Vector> evidence = new List<Vector>();
         List<Vector> labels = new List<Vector>();
+
+        // Normalize the data
         foreach (var line in lines) {
             var values = line.Split(',');
             Vector input = new Vector(4, [
-                                            float.Parse(values[0]), 
-                                            float.Parse(values[1]), 
-                                            float.Parse(values[2]), 
-                                            float.Parse(values[3])
-                                         ]);
-            Vector output = new Vector(1, [float.Parse(values[4])]);
+                                double.Parse(values[0]),
+                                double.Parse(values[1]),
+                                double.Parse(values[2]),
+                                double.Parse(values[3])
+                         ]);
+            Vector output = new Vector(1, [double.Parse(values[4])]);
 
             evidence.Add(input);
             labels.Add(output);
@@ -32,16 +34,15 @@ class Program {
         labels = combined.Select(x => x.Label).ToList();
 
         // Split into train and test data
-        int trainSize = (int)(evidence.Count * 0.2);
+        int trainSize = (int)(evidence.Count * 0.8);
         var trainX = evidence.Take(trainSize).ToArray();
         var testX = evidence.Skip(trainSize).ToArray();
         var trainY = labels.Take(trainSize).ToArray();
         var testY = labels.Skip(trainSize).ToArray();
 
         // Create a neural network
-        Network model = new Network(4, [], 1);
+        Network model = new Network(4, [1], 1);
 
         model.Train(trainX, trainY);
-        model.Test(testX, testY);
     }
 }

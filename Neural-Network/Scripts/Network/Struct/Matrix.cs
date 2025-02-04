@@ -38,8 +38,7 @@ class Matrix {
         } set {
             if (index <= -1 || index >= row) {
                 throw new Exception($"Index is outside of the bounds.");
-            }
-            if (value.Size != column) {
+            } else if (value.Size != column) {
                 throw new Exception($"The vector must be of size {column}.");
             }
             values[index] = value;  
@@ -76,7 +75,7 @@ class Matrix {
         return res;
     } 
 
-    public static Matrix operator *(Matrix a, float b) {
+    public static Matrix operator *(Matrix a, double b) {
         Matrix res = new Matrix(a.Row, a.Column);
         for (int i = 0; i < a.Row; i++) {
             res[i] = a[i] * b;
@@ -85,19 +84,20 @@ class Matrix {
         return res;
     } 
 
-    public static Matrix operator *(float a, Matrix b) {
+    public static Matrix operator *(double a, Matrix b) {
         return b * a;
     }
 
-    public static Matrix operator /(Matrix a, float b) {
+    public static Matrix operator /(Matrix a, double b) {
         return a * (1 / b);
     }
 
-    public override string ToString() {
-        string res = "";
-        for (int i = 0; i < row; i++) {
-            string r = values[i].ToString();
-            res += r + (i != row - 1 ? "\n" : "");
+    public static Matrix operator ~(Matrix a) {
+        Matrix res = new Matrix(a.Column, a.Row);
+        for (int i = 0; i < a.Row; i++) {
+            for (int j = 0; j < a.Column; j++) {
+                res[j][i] = a[i][j];
+            }
         }
 
         return res;

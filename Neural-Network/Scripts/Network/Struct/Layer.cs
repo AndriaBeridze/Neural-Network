@@ -9,6 +9,8 @@ class Layer {
 
     private string activation;
 
+    private Vector lastInput;
+
     public Layer(int nodesIn, int nodesOut, string activation = "sigmoid") {
         this.nodesIn = nodesIn;
         this.nodesOut = nodesOut;
@@ -16,6 +18,8 @@ class Layer {
 
         weights = new Matrix(nodesOut, nodesIn);
         biases = new Vector(nodesOut);
+
+        lastInput = new Vector(nodesIn);
     }
 
     public int NodesIn => nodesIn;
@@ -24,56 +28,59 @@ class Layer {
     public Matrix Weights => weights;
     public Vector Biases => biases;
 
-    public void ApplyGradient(Matrix weightGradient, Vector biasGradient, float learningRate) {
-        weights -= weightGradient * learningRate;
-        biases -= biasGradient * learningRate;
-    }
+    public Vector LastInput => lastInput;
 
     public Vector Forward(Vector input) {
+        lastInput = input;
         return Activate(weights * input + biases);
     }
 
-    public Vector Activate(Vector input) {
+    private Vector Activate(Vector input) {
+        Vector res = new Vector(input.Size);
+        for (int i = 0; i < input.Size; i++) {
+            res[i] = Activate(input[i]);
+        }
+
+        return res;
+    }
+
+    private double Activate(double x) {
         switch (activation) {
-            case "relu":
-                return ReLU(input);
             case "sigmoid":
-                return Sigmoid(input);
+                return 1 / (1 + Math.Exp(-x));
             case "tanh":
-                return Tanh(input);
+                return Math.Tanh(x);
+            case "relu":
+                return Math.Max(0, x);
             default:
                 throw new Exception("Activation function not recognized.");
         }
     }
 
-    public Vector ReLU(Vector input) {
-        float[] res = new float[input.Size];
+    public Vector Derivative(Vector input) {
+        Vector res = new Vector(input.Size);
         for (int i = 0; i < input.Size; i++) {
-            res[i] = Math.Max(0, input[i]);
+            res[i] = Derivative(input[i]);
         }
 
-        return new Vector(input.Size, res);
+        return res;
     }
 
-    public Vector Sigmoid(Vector input) {
-        float[] res = new float[input.Size];
-        for (int i = 0; i < input.Size; i++) {
-            res[i] = 1 / (1 + (float) Math.Exp(-input[i]));
+    private double Derivative(double x) {
+        switch (activation) {
+            case "sigmoid":
+                return x * (1 - x);
+            case "tanh":
+                return 1 - x * x;
+            case "relu":
+                return x > 0 ? 1 : 0;
+            default:
+                throw new Exception("Activation function not recognized.");
         }
-
-        return new Vector(input.Size, res);
     }
 
-    public Vector Tanh(Vector input) {
-        float[] res = new float[input.Size];
-        for (int i = 0; i < input.Size; i++) {
-            res[i] = (float) Math.Tanh(input[i]);
-        }
-
-        return new Vector(input.Size, res);
-    }
-
-    public override string ToString() {
-        return $"Layer: {nodesIn} -> {nodesOut} ({activation})";
+    public void ApplyGradient(Matrix gradientW, Vector gradientB, double learningRate) {
+        weights -= gradientW * learningRate;
+        biases -= gradientB * learningRate;
     }
 }
