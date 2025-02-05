@@ -9,7 +9,7 @@ class Layer {
 
     private string activation;
 
-    private Vector lastInput;
+    private Vector lastInput; // Need for backpropagation
 
     public Layer(int nodesIn, int nodesOut, string activation = "sigmoid") {
         this.nodesIn = nodesIn;
@@ -45,6 +45,10 @@ class Layer {
     }
 
     private double Activate(double x) {
+        /*
+            Activation functions are needed to either scale or normalize the output of a neuron.
+            The activation function is applied to the weighted sum of the inputs and biases.
+        */
         switch (activation) {
             case "sigmoid":
                 return 1 / (1 + Math.Exp(-x));
@@ -57,6 +61,8 @@ class Layer {
         }
     }
 
+    // Derivative of the activation function
+    // When minimizing the cost, we need to follow the gradient of the cost function backwards
     public Vector Derivative(Vector input) {
         Vector res = new Vector(input.Size);
         for (int i = 0; i < input.Size; i++) {
@@ -79,6 +85,8 @@ class Layer {
         }
     }
 
+    // Apply the gradient to the weights and biases
+    // When going the opposite direction of the gradient (derivative), we are minimizing the cost
     public void ApplyGradient(Matrix gradientW, Vector gradientB, double learningRate) {
         weights -= gradientW * learningRate;
         biases -= gradientB * learningRate;

@@ -25,7 +25,7 @@ class Network {
     }
 
     public void Learn(Vector input, Vector target, double learningRate) {
-        Vector output = Forward(input); // Forward pass
+        Vector output = Forward(input); 
 
         Matrix[] gradientW = new Matrix[layers.Count];
         Vector[] gradientB = new Vector[layers.Count];
@@ -34,6 +34,7 @@ class Network {
         Vector derivative = layers[^1].Derivative(output);
         Vector delta = new(target.Size);
 
+        // delta[output_layer]
         for (int i = 0; i < target.Size; i++) {
             delta[i] = outputError[i] * derivative[i];
         }
@@ -45,12 +46,13 @@ class Network {
             gradientB[layerIndex] = new Vector(layer.NodesOut);
 
             for (int i = 0; i < layer.NodesOut; i++) {
-                gradientB[layerIndex][i] = delta[i]; // Bias gradient
+                gradientB[layerIndex][i] = delta[i]; // Bias gradient, dC/db = dz/db * dC/dz = dz/db * delta = delta
                 for (int j = 0; j < layer.NodesIn; j++) {
-                    gradientW[layerIndex][i][j] = delta[i] * layer.LastInput[j]; // Weight gradient
+                    gradientW[layerIndex][i][j] = delta[i] * layer.LastInput[j]; // Weight gradient, dC/dw = dz/dw * dC/dz = dz/dw * delta = input * delta
                 }
             }
 
+            // Update delta
             outputError = ~layer.Weights * delta;
             derivative = layer.Derivative(layer.LastInput);
 
@@ -60,13 +62,13 @@ class Network {
             }
         }
 
-        // Apply gradients with learning rate
+        //  Apply the gradient
         for (int layerIndex = 0; layerIndex < layers.Count; layerIndex++) {
             layers[layerIndex].ApplyGradient(gradientW[layerIndex], gradientB[layerIndex], learningRate);
         }
     }
 
-
+    // Train the network
     public void Train(Vector[] inputs, Vector[] targets, double learningRate = 0.1f, int batchSize = 100) {
         Console.WriteLine("Training...");
         Console.WriteLine("Cost: 0.0000");
@@ -80,7 +82,7 @@ class Network {
             Console.SetCursorPosition(6, Console.CursorTop - 1);
             Console.WriteLine($"{cost:F4}");
 
-            if (cost <= 0.01) break;
+            if (cost <= 0.01) break; // Accuracy is pretty high, so we can stop
         }
         Console.WriteLine("Training complete.");
         Console.WriteLine($"Training accuracy: {Accuracy(inputs, targets)*100:F2}%");
@@ -98,6 +100,7 @@ class Network {
             double cost = Util.Cost(error);
 
             if (cost < 0.1f) {
+                // Correct with high probability
                 correct++;
             }   
         }
@@ -107,14 +110,5 @@ class Network {
 
     public Vector Predict(Vector input) {
         return Forward(input);
-    }
-
-    public override string ToString() {
-        string res = "";
-        foreach (Layer layer in layers) {
-            res += layer.ToString() + "\n";
-        }
-
-        return res;
     }
 }
