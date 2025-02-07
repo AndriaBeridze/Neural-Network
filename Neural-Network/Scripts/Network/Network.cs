@@ -1,5 +1,6 @@
 using Deepforge.Struct;
 using Deepforge.Utility;
+using System.Text.Json;
 
 namespace Deepforge;
 
@@ -13,6 +14,51 @@ class Network {
             prev = hidden[i];
         }
         layers.Add(new Layer(prev, output));
+    }
+
+    public Network(string path) {
+        using (StreamReader reader = new StreamReader(path)) {
+            string? line = reader.ReadLine();
+            if (line == null) throw new InvalidDataException("The file is missing the layer count.");
+            int layerCount = int.Parse(line);
+
+            line = reader.ReadLine();
+            if (line == null) throw new InvalidDataException("The file is missing the layer sizes.");
+            string[] values = line.Split(" ");
+            int[] sizes = new int[values.Length];
+            for (int i = 0; i < values.Length; i++) {
+                sizes[i] = int.Parse(values[i]);
+            }
+
+            for (int i = 0; i < layerCount; i++) {
+                int nodesIn = sizes[i];
+                int nodesOut = sizes[i + 1];
+                Matrix weights = new Matrix(nodesOut, nodesIn);
+                Vector biases = new Vector(nodesOut);
+                string? activation = null;
+
+                for (int j = 0; j < nodesOut; j++) {
+                    string? lineW = reader.ReadLine();
+                    if (lineW == null) throw new InvalidDataException("The file is missing the weights.");
+                    string[] valuesW = lineW.Split(" ");
+                    for (int k = 0; k < valuesW.Length; k++) {
+                        weights[j][k] = double.Parse(valuesW[k]);
+                    }
+                }
+
+                string? lineB = reader.ReadLine();
+                if (lineB == null) throw new InvalidDataException("The file is missing the biases.");
+                string[] valuesB = lineB.Split(" ");
+                for (int j = 0; j < nodesOut; j++) {
+                    biases[j] = double.Parse(valuesB[j]);
+                }
+
+                activation = reader.ReadLine();
+                if (activation == null) throw new InvalidDataException("The file is missing the activation function.");
+
+                layers.Add(new Layer(nodesIn, nodesOut, weights, biases, activation));
+            }
+        }
     }
 
     public Vector Forward(Vector input) {
@@ -69,10 +115,10 @@ class Network {
     }
 
     // Train the network
-    public void Train(Vector[] inputs, Vector[] targets, double learningRate = 0.1f, int batchSize = 100) {
+    public void Train(Vector[] inputs, Vector[] targets, double learningRate = 0.2f, int epochs = 100) {
         Console.WriteLine("Training...");
         Console.WriteLine("Cost: 0.0000");
-        while (true) {
+        for (int epoch = 0; epoch < epochs; epoch++) {
             for (int i = 0; i < inputs.Length; i++) {
                 Learn(inputs[i], targets[i], learningRate);
             }
@@ -80,9 +126,7 @@ class Network {
             double cost = Util.Cost(targets, inputs.Select(Predict).ToArray());
             
             Console.SetCursorPosition(6, Console.CursorTop - 1);
-            Console.WriteLine($"{cost:F4}");
-
-            if (cost <= 0.01) break; // Accuracy is pretty high, so we can stop
+            Console.WriteLine($"{cost:F5}");
         }
         Console.WriteLine("Training complete.");
         Console.WriteLine($"Training accuracy: {Accuracy(inputs, targets)*100:F2}%");
@@ -99,7 +143,7 @@ class Network {
             Vector error = targets[i] - output;
             double cost = Util.Cost(error);
 
-            if (cost < 0.1f) {
+            if (cost < 0.05f) {
                 // Correct with high probability
                 correct++;
             }   
@@ -110,5 +154,23 @@ class Network {
 
     public Vector Predict(Vector input) {
         return Forward(input);
+    }
+
+    public void Save(string path) {
+        using (StreamWriter writer = new StreamWriter(path)) {
+            writer.WriteLine(layers.Count);
+            int prev = layers[0].NodesIn;
+            foreach (Layer layer in layers) {
+                writer.Write(prev + " ");
+                prev = layer.NodesOut;
+            }
+            writer.WriteLine(prev);
+
+            foreach (Layer layer in layers) {
+                writer.WriteLine(layer.Weights);
+                writer.WriteLine(layer.Biases);
+                writer.WriteLine(layer.Activation);
+            }
+        }
     }
 }

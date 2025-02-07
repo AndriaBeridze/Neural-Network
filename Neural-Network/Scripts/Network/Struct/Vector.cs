@@ -99,4 +99,13 @@ class Vector {
     public static Vector operator /(Vector a, double b) {
         return a * (1 / b);
     }
+
+    public override string ToString() {
+        string res = "";
+        for (int i = 0; i < size; i++) {
+            res += values[i] + (i == size - 1 ? "" : " ");
+        }
+
+        return res;
+    }
 }

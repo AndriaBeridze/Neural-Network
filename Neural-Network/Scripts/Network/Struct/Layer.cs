@@ -22,11 +22,24 @@ class Layer {
         lastInput = new Vector(nodesIn);
     }
 
+    public Layer(int nodesIn, int nodesOut, Matrix weights, Vector biases, string activation = "sigmoid") {
+        this.nodesIn = nodesIn;
+        this.nodesOut = nodesOut;
+        this.activation = activation;
+
+        this.weights = weights;
+        this.biases = biases;
+
+        lastInput = new Vector(nodesIn);
+    }
+
     public int NodesIn => nodesIn;
     public int NodesOut => nodesOut;
 
     public Matrix Weights => weights;
     public Vector Biases => biases;
+
+    public string Activation => activation;
 
     public Vector LastInput => lastInput;
 

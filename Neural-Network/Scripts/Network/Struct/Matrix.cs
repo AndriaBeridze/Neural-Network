@@ -114,4 +114,13 @@ class Matrix {
 
         return res;
     }
+
+    public override string ToString() {
+        string res = "";
+        for (int i = 0; i < row; i++) {
+            res += values[i] + (i == row - 1 ? "" : "\n");
+        }
+
+        return res;
+    }
 }

@@ -1,48 +1,23 @@
-﻿using Deepforge;
+﻿using System.Security.Policy;
 using Deepforge.Struct;
+using Deepforge.Utility;
 
 namespace Deepforge.App;
 
 class Program {
     static void Main() {
-
         string filePath = @"Neural-Network/Resources/Data/banknote-authentication.csv";
-        var lines = File.ReadAllLines(filePath).Skip(1);
 
-        List<Vector> evidence = new List<Vector>();
-        List<Vector> labels = new List<Vector>();
+        Network model = new Network("Neural-Network/Resources/Models/bank-auth.txt");
 
-        // Normalize the data
-        foreach (var line in lines) {
-            var values = line.Split(',');
-            Vector input = new Vector(4, [
-                                double.Parse(values[0]),
-                                double.Parse(values[1]),
-                                double.Parse(values[2]),
-                                double.Parse(values[3])
-                         ]);
-            Vector output = new Vector(1, [double.Parse(values[4])]);
+        // Load the data
+        Vector[] evidence = [];
+        Vector[] labels = [];
+        (evidence, labels) = DataParser.ParseData(filePath, [4]);
 
-            evidence.Add(input);
-            labels.Add(output);
-        }
+        Vector[] trainX = [], trainY = [], testX = [], testY = [];
+        (_, _, testX, testY) = DataParser.TrainTestSplit(evidence, labels, trainSize : 0.8);
 
-        // Shuffle evidence and labels
-        var rng = new Random();
-        var combined = evidence.Zip(labels, (e, l) => new { Evidence = e, Label = l }).OrderBy(x => rng.Next()).ToList();
-        evidence = combined.Select(x => x.Evidence).ToList();
-        labels = combined.Select(x => x.Label).ToList();
-
-        // Split into train and test data
-        int trainSize = (int)(evidence.Count * 0.8);
-        var trainX = evidence.Take(trainSize).ToArray();
-        var testX = evidence.Skip(trainSize).ToArray();
-        var trainY = labels.Take(trainSize).ToArray();
-        var testY = labels.Skip(trainSize).ToArray();
-
-        // Create a neural network
-        Network model = new Network(4, [1], 1);
-
-        model.Train(trainX, trainY);
+        model.Test(testX, testY);
     }
 }
