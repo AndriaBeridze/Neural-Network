@@ -118,6 +118,7 @@ class Network {
     public void Train(Vector[] inputs, Vector[] targets, double learningRate = 0.2f, int epochs = 100) {
         Console.WriteLine("Training...");
         Console.WriteLine("Cost: 0.0000");
+        Console.WriteLine("Accuracy: 0.00%");
         for (int epoch = 0; epoch < epochs; epoch++) {
             for (int i = 0; i < inputs.Length; i++) {
                 Learn(inputs[i], targets[i], learningRate);
@@ -125,8 +126,10 @@ class Network {
 
             double cost = Util.Cost(targets, inputs.Select(Predict).ToArray());
             
-            Console.SetCursorPosition(6, Console.CursorTop - 1);
+            Console.SetCursorPosition(6, Console.CursorTop - 2);
             Console.WriteLine($"{cost:F5}");
+            Console.SetCursorPosition(10, Console.CursorTop);
+            Console.WriteLine($"{Accuracy(inputs, targets)*100:F2}%");
         }
         Console.WriteLine("Training complete.");
         Console.WriteLine($"Training accuracy: {Accuracy(inputs, targets)*100:F2}%");

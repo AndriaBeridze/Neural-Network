@@ -6,18 +6,16 @@ namespace Deepforge.App;
 
 class Program {
     static void Main() {
-        string filePath = @"Neural-Network/Resources/Data/banknote-authentication.csv";
+        string filePath = @"Neural-Network/Resources/Models/mnist.txt";
 
-        Network model = new Network("Neural-Network/Resources/Models/bank-auth.txt");
+        Network model = new Network(filePath);
 
-        // Load the data
-        Vector[] evidence = [];
-        Vector[] labels = [];
-        (evidence, labels) = DataParser.ParseData(filePath, [4]);
+        Vector[] evidence, labels;
+        (evidence, labels) = DataParser.ParseData("Neural-Network/Resources/Data/mnist.csv", [0]);
 
-        Vector[] trainX = [], trainY = [], testX = [], testY = [];
-        (_, _, testX, testY) = DataParser.TrainTestSplit(evidence, labels, trainSize : 0.8);
+        DataParser.Linearize(ref evidence, 0, 255);
+        DataParser.OneHotEncode(ref labels, 10);
 
-        model.Test(testX, testY);
+        model.Test(evidence, labels);
     }
 }
