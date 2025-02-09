@@ -16,11 +16,21 @@ class Network {
     }
 
     public Network(string path) {
+        // Load the network from a file
+        // Structure of the file:
+        // layer count
+        // layer sizes
+        // for each layer:
+        //   - weights
+        //   - biases
+        //   - activation function
         using (StreamReader reader = new StreamReader(path)) {
+            // Read the layer count
             string? line = reader.ReadLine();
             if (line == null) throw new InvalidDataException("The file is missing the layer count.");
             int layerCount = int.Parse(line);
 
+            // Read the layer sizes
             line = reader.ReadLine();
             if (line == null) throw new InvalidDataException("The file is missing the layer sizes.");
             string[] values = line.Split(" ");
@@ -29,6 +39,7 @@ class Network {
                 sizes[i] = int.Parse(values[i]);
             }
 
+            // Read the layers
             for (int i = 0; i < layerCount; i++) {
                 int nodesIn = sizes[i];
                 int nodesOut = sizes[i + 1];
@@ -36,6 +47,7 @@ class Network {
                 Vector biases = new Vector(nodesOut);
                 string? activation = null;
 
+                // Read the weights
                 for (int j = 0; j < nodesOut; j++) {
                     string? lineW = reader.ReadLine();
                     if (lineW == null) throw new InvalidDataException("The file is missing the weights.");
@@ -45,6 +57,7 @@ class Network {
                     }
                 }
 
+                // Read the biases
                 string? lineB = reader.ReadLine();
                 if (lineB == null) throw new InvalidDataException("The file is missing the biases.");
                 string[] valuesB = lineB.Split(" ");
@@ -52,9 +65,11 @@ class Network {
                     biases[j] = double.Parse(valuesB[j]);
                 }
 
+                // Read the activation function
                 activation = reader.ReadLine();
                 if (activation == null) throw new InvalidDataException("The file is missing the activation function.");
 
+                // Add the layer
                 layers.Add(new Layer(nodesIn, nodesOut, weights, biases, activation));
             }
         }

@@ -3,6 +3,7 @@ using Deepforge.API;
 namespace Deepforge.Utility;
 
 class DataParser {
+    // Parse the data from a CSV file
     public static (Vector[], Vector[]) ParseData(string path, int[] labelIndices, Dictionary<string, int>? labelMap = null) {
         var lines = File.ReadAllLines(path).Skip(1);
 
@@ -41,6 +42,7 @@ class DataParser {
         return (evidences.ToArray(), labels.ToArray());
     }
 
+    // Linearize the data, so it's in the range [0, 1]
     public static void Linearize(ref Vector[] data, int minValue, int maxValue) {
         for (int i = 0; i < data.Length; i++) {
             data[i] = Linearize(data[i], minValue, maxValue);
@@ -56,6 +58,9 @@ class DataParser {
         return res;
     }
 
+    // Standardize the data
+    // It's a common practice to standardize the data before feeding it to the neural network
+    // Formula: (x - mean) / (standard deviation)
     public static void Standardize(ref Vector[] data) {
         int vectorSize = data[0].Size;
         Vector mean = new Vector(vectorSize);
@@ -87,6 +92,7 @@ class DataParser {
         }
     }
 
+    // Split the data into training and testing sets
     public static (Vector[], Vector[], Vector[], Vector[]) TrainTestSplit(Vector[] evidence, Vector[] labels, double trainSize = 0.5) {
         int trainLength = (int) (evidence.Length * trainSize);
         int testLength = evidence.Length - trainLength;
@@ -115,6 +121,8 @@ class DataParser {
         return (trainX, trainY, testX, testY);
     }
 
+    // One-hot encode the labels
+    // When the label is 9 and we have 10 classes, the one-hot encoding will be [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
     public static void OneHotEncode(ref Vector[] labels, int classes) {
         for (int i = 0; i < labels.Length; i++) {
             labels[i] = OneHotEncode(labels[i], classes);

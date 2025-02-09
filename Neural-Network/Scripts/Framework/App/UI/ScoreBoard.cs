@@ -21,6 +21,7 @@ class ScoreBoard {
         this.width = width;
         this.height = height;
 
+        // Load the pre-trained model
         model = new Network("Neural-Network/Models/mnist.txt");
     }
 
@@ -37,6 +38,7 @@ class ScoreBoard {
                                                     .OrderByDescending(item => item.Value)
                                                     .ToList();
 
+        // Sort the predictions by the highest probability
         for (int i = 0; i < 10; i++) {
             index[i] = indexedPrediction[i].Index;
             score[i] = indexedPrediction[i].Value / sum;
@@ -51,23 +53,28 @@ class ScoreBoard {
         Raylib.DrawRectangleRec(desk, Theme.ScoreBoardColor);
 
         int offset = 20;
-        int textX = startX + offset;
-        int textY = startY + offset;
+        int leftTextX = startX + offset;
+        int leftTextY = startY + offset;
+        int rightTextX = startX + width - offset * 2;
+        int rightTextY = startY + offset;
+
+        // Each digit has a name and a score
+        // The score is the probability of the digit being the one drawn on the canvas
+        // Labels are drawn on the left, scores on the right
         for (int i = 0; i < 10; i++) {
             Color color = new Color(180, 180, 180, 255);
             if (i == 0) {
+                // The most probable digit is highlighted
                 color = Color.White;
             }
 
-            Raylib.DrawTextEx(font, $"{names[index[i]]}", new System.Numerics.Vector2(textX, textY), fontSize, 1, color);
-            
-
             int size = (int) Raylib.MeasureTextEx(font, $"{score[i] * 100:00.00}%", fontSize, 1).X;
-            int perTextX = textX - offset * 2 - size + width;
 
-            Raylib.DrawTextEx(font, $"{score[i] * 100:00.00}%", new System.Numerics.Vector2(perTextX, textY), fontSize, 1, color);
+            Raylib.DrawTextEx(font, names[index[i]], new System.Numerics.Vector2(leftTextX, leftTextY), fontSize, 1, color);
+            Raylib.DrawTextEx(font, $"{score[i] * 100:00.00}%", new System.Numerics.Vector2(rightTextX - size, rightTextY), fontSize, 1, color);
             
-            textY += offset + fontSize * 10 / 15;
+            leftTextY += offset + fontSize * 10 / 15;
+            rightTextY += offset + fontSize * 10 / 15;
         }
     }
 }

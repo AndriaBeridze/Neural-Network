@@ -5,12 +5,16 @@ using System.Numerics;
 namespace Deepforge.App;
 
 class Canvas {
+    // Usually 28x28 pixels, still chose to make it customizable
     private int width;
     private int height;
     private int pixelSize;
 
     int[,] pixelValues = new int[0, 0];
 
+    // The influence radius of the brush
+    // If the pixel falls within this radius, it will be affected by the brush
+    // The closer the pixel is to the center of the brush, the more it will be affected
     private double influenceRadius = 1.3;
 
     private static int fontSize = 50;
@@ -32,8 +36,10 @@ class Canvas {
     public double[] Update() {
         int startX = Settings.ScreenWidth / 2 - width * pixelSize - Settings.CenterOffset;
         int startY = Settings.ScreenHeight / 2 - height * pixelSize / 2;
+
         if (Raylib.IsMouseButtonDown(MouseButton.Left) || Raylib.IsMouseButtonDown(MouseButton.Right)) {
-            int scale = Raylib.IsMouseButtonDown(MouseButton.Left) ? 1 : -2;
+            // Left click to draw, right click to erase 
+            int scale = Raylib.IsMouseButtonDown(MouseButton.Left) ? 1 : -2; // If left click, we need to add "whiteness", if right click, we need to remove it
             Vector2 mousePosition = Raylib.GetMousePosition();
             double x = (mousePosition.X - startX) / pixelSize;
             double y = (mousePosition.Y - startY) / pixelSize;
@@ -43,7 +49,11 @@ class Canvas {
                     for (int j = 0; j < height; j++) {
                         double dist = Math.Sqrt((x - i) * (x - i) + (y - j) * (y - j));
 
+                        // The closer the pixel is to the center of the brush, the more it will be affected
                         double influence = 0.5 * Math.Max(0, (influenceRadius - dist) / influenceRadius);
+                        
+                        // If the pixel is within the influence radius, we need to add the influence to the pixel value
+                        // Make sure the pixel value is between 0 and 255
                         pixelValues[i, j] += (int) (influence * 255) * scale;
                         pixelValues[i, j] = Math.Min(255, pixelValues[i, j]);
                         pixelValues[i, j] = Math.Max(0, pixelValues[i, j]);
@@ -53,6 +63,7 @@ class Canvas {
         }
 
         if (Raylib.IsKeyPressed(KeyboardKey.Space)) {
+            // Clear the canvas
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     pixelValues[x, y] = 0;
@@ -84,19 +95,24 @@ class Canvas {
             }
         }
 
+        // Instructions
         int instructionsX = startX;
         int instructionsY = startY + height * pixelSize + Settings.DeskPadding * 2;
         Raylib.DrawTextEx(font, "Left click to draw | Right click to erase | Space to clear", new Vector2(instructionsX, instructionsY), fontSize, 1, Color.White);
     }
 
+    // MNIST states that their images is centered and scaled to fit a 20x20 pixel box
+    // We need to do the same to the input image
     private double[] Process(double[] values) {
         double[,] pic = new double[width, height];
+        // Convert the values to a 2D array
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 pic[x, y] = values[x + y * width];
             }
         }
 
+        // Find the bounding box of the image
         int minX = width, minY = height, maxX = 0, maxY = 0;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -109,6 +125,7 @@ class Canvas {
             }
         }
 
+        // Scale the image to fit a 20x20 pixel box
         int deltaX = maxX - minX;
         int deltaY = maxY - minY;
         double scale = 20.0f / Math.Max(deltaX, deltaY);
@@ -143,6 +160,7 @@ class Canvas {
         xCenter /= sum;
         yCenter /= sum;
 
+        // Center the image
         int xOffset = (int)(10 - xCenter);
         int yOffset = (int)(10 - yCenter);
 
@@ -157,6 +175,7 @@ class Canvas {
             }
         }
 
+        // Convert the 2D array back to a 1D array
         double[] processedValues = new double[28 * 28];
         for (int x = 0; x < 28; x++) {
             for (int y = 0; y < 28; y++) {

@@ -12,6 +12,7 @@ class App {
         canvas = new Canvas(28, 28, Settings.PixelSize);
         scoreBoard = new ScoreBoard(Settings.CanvasLength * Settings.PixelSize, Settings.CanvasLength * Settings.PixelSize);
 
+        // Background desk for better visuals
         int deskX = Settings.ScreenWidth / 2 - Settings.CanvasLength * Settings.PixelSize - Settings.CenterOffset - Settings.DeskPadding;
         int deskY = Settings.ScreenHeight / 2 - Settings.CanvasLength * Settings.PixelSize / 2 - Settings.DeskPadding;
         int deskWidth = 2 * (Settings.CanvasLength * Settings.PixelSize + Settings.DeskPadding + Settings.CenterOffset);
@@ -20,8 +21,8 @@ class App {
     }
 
     public void Update() {
-        double[] values = canvas.Update();
-        scoreBoard.Update(values);
+        double[] values = canvas.Update(); // Update the canvas + get the values from it
+        scoreBoard.Update(values); // Update the score board with the values
     }
 
     public void Render() {
