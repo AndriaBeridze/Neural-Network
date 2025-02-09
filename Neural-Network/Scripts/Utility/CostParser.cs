@@ -1,8 +1,8 @@
-using Deepforge.Struct;
+using Deepforge.API;
 
 namespace Deepforge.Utility;
 
-class Util {
+class CostParser {
     // Cost function
     public static double Cost(Vector error) {
         double res = 0;

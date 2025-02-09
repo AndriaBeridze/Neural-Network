@@ -1,6 +1,5 @@
-using Deepforge.Struct;
+using Deepforge.API;
 using Deepforge.Utility;
-using System.Text.Json;
 
 namespace Deepforge;
 
@@ -124,7 +123,7 @@ class Network {
                 Learn(inputs[i], targets[i], learningRate);
             }
 
-            double cost = Util.Cost(targets, inputs.Select(Predict).ToArray());
+            double cost = CostParser.Cost(targets, inputs.Select(Predict).ToArray());
             
             Console.SetCursorPosition(6, Console.CursorTop - 2);
             Console.WriteLine($"{cost:F5}");
@@ -144,7 +143,7 @@ class Network {
         for (int i = 0; i < inputs.Length; i++) {
             Vector output = Predict(inputs[i]);
             Vector error = targets[i] - output;
-            double cost = Util.Cost(error);
+            double cost = CostParser.Cost(error);
 
             if (cost < 0.05f) {
                 // Correct with high probability

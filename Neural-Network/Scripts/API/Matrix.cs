@@ -1,4 +1,4 @@
-namespace Deepforge.Struct;
+namespace Deepforge.API;
 
 /*
     A class representing a mathematical matrix.

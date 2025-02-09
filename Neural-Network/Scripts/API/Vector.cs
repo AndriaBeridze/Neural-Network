@@ -1,4 +1,4 @@
-namespace Deepforge.Struct;
+namespace Deepforge.API;
 
 /*
     A class representing a mathematical vector.
@@ -98,6 +98,11 @@ class Vector {
     // Scalar division
     public static Vector operator /(Vector a, double b) {
         return a * (1 / b);
+    }
+
+    // Convert the vector to an array
+    public double[] ToArray() {
+        return values;
     }
 
     public override string ToString() {

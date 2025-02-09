@@ -1,4 +1,4 @@
-namespace Deepforge.Struct;
+namespace Deepforge.API;
 
 class Layer {
     private int nodesIn;
