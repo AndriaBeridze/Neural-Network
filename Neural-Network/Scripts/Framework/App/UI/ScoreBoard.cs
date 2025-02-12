@@ -11,7 +11,7 @@ class ScoreBoard {
     private Network model;
 
     private static int fontSize = 70;
-    private Font font = Raylib.LoadFontEx("Neural-Network/Resources/Nunito-Medium.ttf", fontSize, null, 250);
+    private Font font = Raylib.LoadFontEx("Neural-Network/Resources/Fonts/Nunito-Medium.ttf", fontSize, null, 250);
 
     private int[] index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     private double[] score = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; 
@@ -22,7 +22,7 @@ class ScoreBoard {
         this.height = height;
 
         // Load the pre-trained model
-        model = new Network("Neural-Network/Models/mnist.txt");
+        model = new Network("Neural-Network/Resources/Models/mnist.txt");
     }
 
     public void Update(double[] values) {

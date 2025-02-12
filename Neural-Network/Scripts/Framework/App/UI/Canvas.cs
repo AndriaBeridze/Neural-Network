@@ -18,7 +18,7 @@ class Canvas {
     private double influenceRadius = 1.3;
 
     private static int fontSize = 50;
-    private Font font = Raylib.LoadFontEx("Neural-Network/Resources/Nunito-Medium.ttf", fontSize, null, 250);
+    private Font font = Raylib.LoadFontEx("Neural-Network/Resources/Fonts/Nunito-Medium.ttf", fontSize, null, 250);
 
     public Canvas(int width, int height, int pixelSize) {
         this.width = width;

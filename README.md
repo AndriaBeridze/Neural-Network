@@ -1,7 +1,7 @@
 # 🧠 Neural-Network
 A custom neural network implemented from scratch in C# using the .NET framework
 
-![alt text](<Neural-Network/Media/Screenshot.png>)
+![alt text](<Neural-Network/Resources/Media/Screenshot.png>)
 
 ## Strengths and Limitations
 
