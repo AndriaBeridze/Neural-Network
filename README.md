@@ -49,4 +49,4 @@ A custom neural network implemented from scratch in C# using the .NET framework
 
 - **Email**: andria24b@gmail.com
 - **GitHub**: https://github.com/AndriaBeridze
-- **LinkedIn**: https://www.linkedin.com/in/andria-beridze-4b26002aa/****
+- **LinkedIn**: https://www.linkedin.com/in/andria-beridze-4b26002aa/
