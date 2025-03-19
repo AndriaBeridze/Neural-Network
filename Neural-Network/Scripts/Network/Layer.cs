@@ -1,4 +1,6 @@
-namespace Deepforge.API;
+using Deepforge.Math;
+
+namespace Deepforge.Struct;
 
 class Layer {
     private int nodesIn;
@@ -64,11 +66,11 @@ class Layer {
         */
         switch (activation) {
             case "sigmoid":
-                return 1 / (1 + Math.Exp(-x));
+                return 1 / (1 + System.Math.Exp(-x));
             case "tanh":
-                return Math.Tanh(x);
+                return System.Math.Tanh(x);
             case "relu":
-                return Math.Max(0, x);
+                return System.Math.Max(0, x);
             default:
                 throw new Exception("Activation function not recognized.");
         }

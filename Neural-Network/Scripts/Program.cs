@@ -1,7 +1,7 @@
 ﻿using Deepforge.Utility;
 using Raylib_cs;
 
-namespace Deepforge.App;
+namespace Deepforge;
 
 class Program {
     static void Main(string[] args) {
@@ -9,7 +9,7 @@ class Program {
         Raylib.InitWindow(Settings.ScreenWidth, Settings.ScreenHeight, "Neural Network by Andria Beridze");
         Raylib.SetTargetFPS(120);
 
-        App app = new App();
+        App.App app = new App.App();
 
         while (!Raylib.WindowShouldClose()) {
             Raylib.BeginDrawing();

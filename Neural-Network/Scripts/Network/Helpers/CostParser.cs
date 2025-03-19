@@ -1,6 +1,6 @@
-using Deepforge.API;
+using Deepforge.Math;
 
-namespace Deepforge.Utility;
+namespace Deepforge.Helper;
 
 class CostParser {
     // Cost function

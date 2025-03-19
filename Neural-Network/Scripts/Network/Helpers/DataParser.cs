@@ -1,6 +1,6 @@
-using Deepforge.API;
+using Deepforge.Math;
 
-namespace Deepforge.Utility;
+namespace Deepforge.Helper;
 
 class DataParser {
     // Parse the data from a CSV file
@@ -79,9 +79,9 @@ class DataParser {
         for (int i = 0; i < vectorSize; i++) {
             double sum = 0;
             for (int j = 0; j < data.Length; j++) {
-                sum += Math.Pow(data[j][i] - mean[i], 2);
+                sum += System.Math.Pow(data[j][i] - mean[i], 2);
             }
-            std[i] = Math.Sqrt(sum / data.Length);
+            std[i] = System.Math.Sqrt(sum / data.Length);
         }
 
         // Standardize data

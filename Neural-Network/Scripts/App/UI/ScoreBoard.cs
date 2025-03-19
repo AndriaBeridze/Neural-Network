@@ -1,5 +1,6 @@
 using Deepforge.Utility;
-using Deepforge.API;
+using Deepforge.Math;
+using Deepforge.Struct;
 using Raylib_cs;
 
 namespace Deepforge.App;

@@ -1,7 +1,7 @@
-using Deepforge.API;
-using Deepforge.Utility;
+using Deepforge.Helper;
+using Deepforge.Math;
 
-namespace Deepforge;
+namespace Deepforge.Struct;
 
 class Network {
     private List<Layer> layers = new List<Layer>();

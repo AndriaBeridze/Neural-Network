@@ -47,16 +47,16 @@ class Canvas {
             if (x >= 0 && x < width && y >= 0 && y < height) {
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
-                        double dist = Math.Sqrt((x - i) * (x - i) + (y - j) * (y - j));
+                        double dist = System.Math.Sqrt((x - i) * (x - i) + (y - j) * (y - j));
 
                         // The closer the pixel is to the center of the brush, the more it will be affected
-                        double influence = 0.5 * Math.Max(0, (influenceRadius - dist) / influenceRadius);
+                        double influence = 0.5 * System.Math.Max(0, (influenceRadius - dist) / influenceRadius);
                         
                         // If the pixel is within the influence radius, we need to add the influence to the pixel value
                         // Make sure the pixel value is between 0 and 255
                         pixelValues[i, j] += (int) (influence * 255) * scale;
-                        pixelValues[i, j] = Math.Min(255, pixelValues[i, j]);
-                        pixelValues[i, j] = Math.Max(0, pixelValues[i, j]);
+                        pixelValues[i, j] = System.Math.Min(255, pixelValues[i, j]);
+                        pixelValues[i, j] = System.Math.Max(0, pixelValues[i, j]);
                     }
                 }
             }
@@ -117,10 +117,10 @@ class Canvas {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 if (pic[x, y] > 0) {
-                    minX = Math.Min(minX, x);
-                    minY = Math.Min(minY, y);
-                    maxX = Math.Max(maxX, x);
-                    maxY = Math.Max(maxY, y);
+                    minX = System.Math.Min(minX, x);
+                    minY = System.Math.Min(minY, y);
+                    maxX = System.Math.Max(maxX, x);
+                    maxY = System.Math.Max(maxY, y);
                 }
             }
         }
@@ -128,7 +128,7 @@ class Canvas {
         // Scale the image to fit a 20x20 pixel box
         int deltaX = maxX - minX;
         int deltaY = maxY - minY;
-        double scale = 20.0f / Math.Max(deltaX, deltaY);
+        double scale = 20.0f / System.Math.Max(deltaX, deltaY);
         double[,] fit = new double[20, 20];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -141,7 +141,7 @@ class Canvas {
                     }
 
                     fit[xIndex, yIndex] += pic[x, y];
-                    fit[xIndex, yIndex] = Math.Min(1, fit[xIndex, yIndex]);
+                    fit[xIndex, yIndex] = System.Math.Min(1, fit[xIndex, yIndex]);
                 }
             }
         }

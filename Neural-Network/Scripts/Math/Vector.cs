@@ -1,4 +1,4 @@
-namespace Deepforge.API;
+namespace Deepforge.Math;
 
 /*
     A class representing a mathematical vector.
